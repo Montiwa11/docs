@@ -1,5 +1,7 @@
-import { runRule } from '../../lib/init-test.js'
-import { liquidQuotedConditionalArg } from '../../lib/linting-rules/liquid-quoted-conditional-arg.js'
+import { describe, expect, test } from 'vitest'
+
+import { runRule } from '../../lib/init-test'
+import { liquidQuotedConditionalArg } from '../../lib/linting-rules/liquid-quoted-conditional-arg'
 
 describe(liquidQuotedConditionalArg.names.join(' - '), () => {
   test('if conditional with quote args fails', async () => {

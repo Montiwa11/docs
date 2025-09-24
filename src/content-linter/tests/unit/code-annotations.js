@@ -1,5 +1,7 @@
-import { runRule } from '../../lib/init-test.js'
-import { codeAnnotations } from '../../lib/linting-rules/code-annotations.js'
+import { describe, expect, test } from 'vitest'
+
+import { runRule } from '../../lib/init-test'
+import { codeAnnotations } from '../../lib/linting-rules/code-annotations'
 
 describe(codeAnnotations.names.join(' - '), () => {
   test('No layout property fails', async () => {

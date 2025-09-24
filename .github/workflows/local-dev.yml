@@ -16,19 +16,26 @@ permissions:
 jobs:
   local-dev:
     if: github.repository == 'github/docs-internal' || github.repository == 'github/docs'
-    runs-on: ${{ fromJSON('["ubuntu-latest", "ubuntu-20.04-xl"]')[github.repository == 'github/docs-internal'] }}
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repo
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-      - name: Install dependencies
-        run: npm install
+      - uses: ./.github/actions/node-npm-setup
+
+      - uses: ./.github/actions/get-docs-early-access
+        if: ${{ github.repository == 'github/docs-internal' }}
+        with:
+          token: ${{ secrets.DOCS_BOT_PAT_BASE }}
 
       # Note that we don't check out docs-early-access, Elasticsearch,
       # or any remote translations. Nothing fancy here!
 
       - name: Disable Next.js telemetry
         run: npx next telemetry disable
+
+      - name: Install headless browser
+        run: npx playwright install --no-shell
 
       # The Playwright test, with the env vars we set here, takes care of
       # starting a server and shutting it down when it's done.
@@ -42,6 +49,9 @@ jobs:
           # tests not exiting at the end with a non-zero. Otherwise,
           # by default failures are marked as "flaky" instead of "failed".
           PLAYWRIGHT_RETRIES: 0
+          TEST_EARLY_ACCESS: ${{ github.repository == 'github/docs-internal' }}
+          # workaround for https://github.com/nodejs/node/issues/59364 as of 22.18.0
+          NODE_OPTIONS: '--no-experimental-strip-types --max-old-space-size=8192'
         run: npm run playwright-test -- playwright-local-dev
 
       - name: Start server in the background

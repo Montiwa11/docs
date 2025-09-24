@@ -2,10 +2,10 @@ import { fileURLToPath } from 'url'
 import path from 'path'
 import http from 'http'
 
-import { expect, describe, test } from '@jest/globals'
+import { describe, expect, test } from 'vitest'
 
-import Page from '#src/frame/lib/page.js'
-import findPage from '#src/frame/middleware/find-page.js'
+import Page from '@/frame/lib/page'
+import findPage from '@/frame/middleware/find-page'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

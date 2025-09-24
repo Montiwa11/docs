@@ -1,12 +1,13 @@
 import { fileURLToPath } from 'url'
 import path from 'path'
-import cheerio from 'cheerio'
-import { describe, expect } from '@jest/globals'
 
-import Page, { FrontmatterErrorsError } from '#src/frame/lib/page.js'
-import { allVersions } from '#src/versions/lib/all-versions.js'
-import enterpriseServerReleases, { latest } from '#src/versions/lib/enterprise-server-releases.js'
-import nonEnterpriseDefaultVersion from '#src/versions/lib/non-enterprise-default-version.js'
+import cheerio from 'cheerio'
+import { beforeAll, beforeEach, describe, expect, test } from 'vitest'
+
+import Page, { FrontmatterErrorsError } from '@/frame/lib/page'
+import { allVersions } from '@/versions/lib/all-versions'
+import enterpriseServerReleases, { latest } from '@/versions/lib/enterprise-server-releases'
+import nonEnterpriseDefaultVersion from '@/versions/lib/non-enterprise-default-version'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const enterpriseServerVersions = Object.keys(allVersions).filter((v) =>
@@ -62,7 +63,7 @@ describe('Page class', () => {
       expect(articleWithFM.showMiniToc).toBe(false)
     })
 
-    // products, categories, and map topics have index.md pages
+    // products, categories, and subcategories have index.md pages
     test('is undefined by default on index.md pages', () => {
       expect(tocPage.showMiniToc).toBeUndefined()
     })
@@ -262,7 +263,7 @@ describe('Page class', () => {
       })
     })
 
-    it('includes videos specified in the featuredLinks frontmatter', async () => {
+    test('includes videos specified in the featuredLinks frontmatter', async () => {
       expect(page.featuredLinks.videos).toStrictEqual([
         {
           title: 'codespaces',
@@ -283,7 +284,7 @@ describe('Page class', () => {
   })
 
   describe('introLinks', () => {
-    it('includes the links specified in the introLinks frontmatter', async () => {
+    test('includes the links specified in the introLinks frontmatter', async () => {
       const page = await Page.init({
         relativePath: 'article-with-introLinks.md',
         basePath: path.join(__dirname, '../../../src/fixtures/fixtures'),
@@ -298,7 +299,7 @@ describe('Page class', () => {
   })
 
   describe('Page.parseFrontmatter()', () => {
-    it('throws an error on bad input', () => {
+    test('throws an error on bad input', () => {
       const markdown = null
       expect(() => {
         Page.parseFrontmatter('some/file.md', markdown)

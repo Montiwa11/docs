@@ -1,16 +1,16 @@
-import { forEachInlineChild } from 'markdownlint-rule-helpers'
-
 import {
   addFixErrorDetail,
+  forEachInlineChild,
   getRange,
   isStringQuoted,
   isStringPunctuated,
-} from '../helpers/utils.js'
+} from '../helpers/utils'
 
 export const imageAltTextEndPunctuation = {
   names: ['GHD032', 'image-alt-text-end-punctuation'],
   description: 'Alternate text for images should end with punctuation',
   tags: ['accessibility', 'images'],
+  parser: 'markdownit',
   function: (params, onError) => {
     forEachInlineChild(params, 'image', function forToken(token) {
       const imageAltText = token.content.trim()

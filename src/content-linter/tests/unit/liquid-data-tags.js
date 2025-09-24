@@ -1,10 +1,12 @@
 import path from 'path'
 
-import { runRule } from '../../lib/init-test.js'
+import { afterAll, beforeAll, describe, expect, test } from 'vitest'
+
+import { runRule } from '../../lib/init-test'
 import {
   liquidDataReferencesDefined,
   liquidDataTagFormat,
-} from '../../lib/linting-rules/liquid-data-tags.js'
+} from '../../lib/linting-rules/liquid-data-tags'
 
 describe(liquidDataReferencesDefined.names.join(' - '), () => {
   const envVarValueBefore = process.env.ROOT

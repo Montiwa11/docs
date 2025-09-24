@@ -1,5 +1,7 @@
-import { getDOM } from '#src/tests/helpers/e2etest.js'
-import { loadPages } from '#src/frame/lib/page-data.js'
+import { describe, expect, test } from 'vitest'
+
+import { getDOM } from '@/tests/helpers/e2etest'
+import { loadPages } from '@/frame/lib/page-data'
 
 const pageList = await loadPages(undefined, ['en'])
 

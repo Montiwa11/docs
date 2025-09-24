@@ -19,6 +19,8 @@ topics:
 children:
   - /roles-in-an-enterprise
   - /best-practices-for-user-security
+  - /create-enterprise-teams
+  - /invite-users-directly
   - /inviting-people-to-manage-your-enterprise
   - /managing-invitations-to-organizations-within-your-enterprise
   - /managing-organization-members-in-your-enterprise
@@ -33,10 +35,10 @@ children:
   - /removing-a-member-from-your-enterprise
   - /managing-dormant-users
   - /suspending-and-unsuspending-users
+  - /deleting-users-from-your-instance
   - /placing-a-legal-hold-on-a-user-or-organization
   - /auditing-ssh-keys
   - /rebuilding-contributions-data
   - /enabling-guest-collaborators
 shortTitle: Manage users
 ---
-

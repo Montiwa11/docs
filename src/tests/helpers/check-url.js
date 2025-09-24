@@ -1,5 +1,5 @@
-import getRedirect from '#src/redirects/lib/get-redirect.js'
-import { getPathWithoutLanguage, getPathWithoutVersion } from '#src/frame/lib/path-utils.js'
+import getRedirect from '@/redirects/lib/get-redirect'
+import { getPathWithoutLanguage, getPathWithoutVersion } from '@/frame/lib/path-utils'
 
 const liquidStartRex = /^{%-?\s*ifversion .+?\s*%}/
 const liquidEndRex = /{%-?\s*endif\s*-?%}$/
@@ -25,7 +25,7 @@ function stripLiquid(text) {
 // Given a URI that does not start with a specific language,
 // return undefined if it can found as a known page.
 // Otherwise, return an object with information that is used to
-// print a useful jest error message in the assertion.
+// print a useful test error message in the assertion.
 export function checkURL(uri, index, redirectsContext) {
   const url = `/en${stripLiquid(uri).split('#')[0]}`
   if (!(url in redirectsContext.pages)) {

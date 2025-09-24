@@ -1,13 +1,14 @@
-import { describe } from '@jest/globals'
 import { readFileSync } from 'fs'
 
-import { allVersions } from '#src/versions/lib/all-versions.js'
+import { describe, expect, test } from 'vitest'
+
+import { allVersions } from '@/versions/lib/all-versions'
 import {
   getGraphqlSchema,
   getGraphqlChangelog,
   getGraphqlBreakingChanges,
   getPreviews,
-} from '../lib/index.js'
+} from '../lib/index'
 
 describe('graphql schema', () => {
   const graphqlTypes = JSON.parse(readFileSync('src/graphql/lib/types.json')).map(

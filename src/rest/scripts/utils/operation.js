@@ -1,14 +1,13 @@
-#!/usr/bin/env node
 import httpStatusCodes from 'http-status-code'
 import { get, isPlainObject } from 'lodash-es'
 import { parseTemplate } from 'url-template'
 import mergeAllOf from 'json-schema-merge-allof'
 
-import { renderContent } from '#src/content-render/index.js'
-import getCodeSamples from './create-rest-examples.js'
-import operationSchema from './operation-schema.js'
-import { validateJson } from '#src/tests/lib/validate-json-schema.js'
-import { getBodyParams } from './get-body-params.js'
+import { renderContent } from './render-content'
+import getCodeSamples from './create-rest-examples'
+import operationSchema from './operation-schema'
+import { validateJson } from '@/tests/lib/validate-json-schema'
+import { getBodyParams } from './get-body-params'
 
 export default class Operation {
   #operation
@@ -45,7 +44,6 @@ export default class Operation {
     this.subcategory = operation['x-github'].subcategory
     this.parameters = operation.parameters || []
     this.bodyParameters = []
-    this.enabledForGitHubApps = operation['x-github'].enabledForGitHubApps
     return this
   }
 
@@ -107,7 +105,7 @@ export default class Operation {
           // until then, we can catch some known generic descriptions and replace
           // them with the default http status message.
           const responseDescription =
-            response.description.toLowerCase() === 'response'
+            !response.description || response.description?.toLowerCase() === 'response'
               ? await renderContent(httpStatusMessage)
               : await renderContent(response.description)
 

@@ -1,18 +1,16 @@
+import semver from 'semver'
 import { TokenKind } from 'liquidjs'
 import { addError } from 'markdownlint-rule-helpers'
 
-import { getRange, addFixErrorDetail } from '../helpers/utils.js'
-import { allVersions, allVersionShortnames } from '#src/versions/lib/all-versions.js'
-import {
-  supported,
-  next,
-  nextNext,
-  deprecated,
-} from '#src/versions/lib/enterprise-server-releases.js'
-import allowedVersionOperators from '#src/content-render/liquid/ifversion-supported-operators.js'
-import { getDeepDataByLanguage } from '#src/data-directory/lib/get-data.js'
-import { getLiquidTokens, getPositionData } from '../helpers/liquid-utils.js'
+import { getRange, addFixErrorDetail } from '../helpers/utils'
+import { allVersions, allVersionShortnames } from '@/versions/lib/all-versions'
+import { supported, next, nextNext, deprecated } from '@/versions/lib/enterprise-server-releases'
+import allowedVersionOperators from '@/content-render/liquid/ifversion-supported-operators'
+import { getDeepDataByLanguage } from '@/data-directory/lib/get-data'
+import getApplicableVersions from '@/versions/lib/get-applicable-versions'
+import { getLiquidTokens, getPositionData } from '../helpers/liquid-utils'
 
+const allShortnames = Object.keys(allVersionShortnames)
 const getAllPossibleVersionNames = memoize(() => {
   // This function might appear "slow" but it's wrapped in a memoizer
   // so it's only every executed once for all files that the
@@ -20,11 +18,19 @@ const getAllPossibleVersionNames = memoize(() => {
   // The third argument passed to getDeepDataByLanguage() is only
   // there for the sake of being able to write a unit test on these
   // lint functions.
-  return new Set([
-    ...Object.keys(getDeepDataByLanguage('features', 'en', process.env.ROOT)),
-    ...Object.keys(allVersionShortnames),
-  ])
+  return new Set([...Object.keys(getAllFeatures()), ...allShortnames])
 })
+
+const getAllFeatures = memoize(() => getDeepDataByLanguage('features', 'en', process.env.ROOT))
+
+const allVersionNames = Object.keys(allVersions)
+
+function isAllVersions(versions) {
+  if (versions.length === allVersionNames.length) {
+    return versions.every((version) => allVersionNames.includes(version))
+  }
+  return false
+}
 
 function memoize(func) {
   let cached = null
@@ -127,9 +133,14 @@ function validateIfversionConditionals(cond, possibleVersionNames) {
     if (strParts.length === 2) {
       const [notKeyword, version] = strParts
       const isValidVersion = validateVersion(version)
-      const isValid = notKeyword === 'not' && isValidVersion
-      if (!isValid) {
+      const isFeatureBasedVersion = Object.keys(getAllFeatures()).includes(version)
+
+      if (notKeyword !== 'not' || !isValidVersion) {
         errors.push(`"${cond}" is not a valid conditional`)
+      } else if (isFeatureBasedVersion) {
+        errors.push(
+          `"${cond}" is not valid - the 'not' keyword cannot be used with feature-based version "${version}"`,
+        )
       }
     }
 
@@ -172,4 +183,92 @@ function validateIfversionConditionals(cond, possibleVersionNames) {
   })
 
   return errors
+}
+
+// The reason this function is exported is because it's sufficiently
+// complex that it needs to be tested in isolation.
+export function validateIfversionConditionalsVersions(cond, allFeatures) {
+  // Suppose the cond is `ghes >3.1 or some-cool-feature` we need to open
+  // that `some-cool-feature` and if that has `{ghes:'>3.0', ghec:'*', fpt:'*'}`
+  // then *combined* versions will be `{ghes:'>3.0', ghec:'*', fpt:'*'}`.
+
+  // If the conditions use `and` then we bail because it's too complex to handle.
+  // Note, don't use \b (word boundary) regex because it would match `foo-and-bar`.
+  if (/\sand\s/.test(cond)) {
+    return []
+  }
+
+  const errors = []
+  const versions = {}
+  let hasFutureLessThan = false
+  for (const part of cond.split(/\sor\s/)) {
+    // For example `fpt or not ghec` or `not ghes or ghec or not fpt`
+    if (/(^|\s)not(\s|$)/.test(part)) {
+      // Bail because it's too complex to handle.
+      return []
+    }
+    for (const [ver, value] of Object.entries(getVersionsObject(part.trim(), allFeatures))) {
+      // If the version value is something like `<=3.0` and the versioning is set
+      // to `<3.19` then it means the version can *potentially* match a version
+      // that doesn't exist yet, but will, in the future.
+      if (/<=?[\d.]+/.test(value)) {
+        hasFutureLessThan = true
+      }
+
+      if (ver in versions) {
+        versions[ver] = lowestVersion(value, versions[ver])
+      } else {
+        versions[ver] = value
+      }
+    }
+  }
+
+  const applicableVersions = []
+  try {
+    applicableVersions.push(...getApplicableVersions(versions))
+  } catch {
+    // Do nothing
+  }
+
+  if (isAllVersions(applicableVersions) && !hasFutureLessThan) {
+    errors.push(
+      `The Liquid ifversion condition '${cond}' includes all possible versions and will always be true`,
+    )
+  }
+  return errors
+}
+
+function getVersionsObject(part, allFeatures) {
+  const versions = {}
+  if (part in allFeatures) {
+    for (const [shortName, version] of Object.entries(allFeatures[part].versions)) {
+      const versionOperator =
+        version in allFeatures ? getVersionsObject(version, allFeatures) : version
+      if (shortName in versions) {
+        versions[shortName] = lowestVersion(versionOperator, versions[shortName])
+      } else {
+        versions[shortName] = versionOperator
+      }
+    }
+  } else if (allShortnames.includes(part)) {
+    versions[part] = '*'
+  } else if (allShortnames.some((v) => part.startsWith(v))) {
+    const shortNamed = allShortnames.find((v) => part.startsWith(v))
+    const rest = part.replace(shortNamed, '').trim()
+    versions[shortNamed] = rest
+  } else {
+    throw new Error(`The version '${part}' is neither a short version name or a feature name`)
+  }
+  return versions
+}
+
+function lowestVersion(version1, version2) {
+  if (version1 === '*' || version2 === '*') {
+    return '*'
+  }
+  if (semver.lt(semver.minVersion(version1), semver.minVersion(version2))) {
+    return version1
+  } else {
+    return version2
+  }
 }

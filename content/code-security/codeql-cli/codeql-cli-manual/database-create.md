@@ -5,7 +5,7 @@ versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   ghec: '*'
   ghes: '*'
 topics:
-  - Advanced Security
+  - Code Security
   - Code scanning
   - CodeQL
 type: reference
@@ -18,6 +18,9 @@ redirect_from:
   - /code-security/codeql-cli/manual/database-create
 ---
 
+<!-- markdownlint-disable GHD053 -->
+
+<!-- markdownlint-disable GHD030 -->
 
 <!-- Content after this section is automatically generated -->
 
@@ -26,7 +29,7 @@ redirect_from:
 ## Synopsis
 
 ```shell copy
-codeql database create [--language=<lang>[,<lang>...]] [--github-auth-stdin] [--github-url=<url>] [--source-root=<dir>] [--threads=<num>] [--ram=<MB>] [--command=<command>] [--mode=<mode>] [--extractor-option=<extractor-option-name=value>] <options>... -- <database>
+codeql database create [--language=<lang>[,<lang>...]] [--github-auth-stdin] [--github-url=<url>] [--source-root=<dir>] [--threads=<num>] [--ram=<MB>] [--command=<command>] [--extractor-option=<extractor-option-name=value>] <options>... -- <database>
 ```
 
 ## Description
@@ -54,8 +57,15 @@ Maven project would not be a suitable choice.
 #### `--[no-]overwrite`
 
 \[Advanced] If the database already exists, delete it and proceed with
-this command instead of failing. This option should be used with caution
-as it may recursively delete the entire database directory.
+this command instead of failing. If the directory exists, but it does
+not look like a database, an error will be thrown.
+
+#### `--[no-]force-overwrite`
+
+\[Advanced] If the database already exists, delete it even if it does
+not look like a database and proceed with this command instead of
+failing. This option should be used with caution as it may recursively
+delete the entire database directory.
 
 #### `--codescanning-config=<file>`
 
@@ -86,6 +96,28 @@ GitHub API to attempt to automatically determine what languages to
 analyse. Note that to be able to do this, a GitHub PAT token must be
 supplied either in the environment variable GITHUB\_TOKEN or via standard
 input using the `--github-auth-stdin` option.
+
+#### `--build-mode=<mode>`
+
+The build mode that will be used to create the database.
+
+Choose your build mode based on the language you are analyzing:
+
+`none`: The database will be created without building the source root.
+Available for C#, Java, JavaScript/TypeScript, Python, and Ruby.
+
+`autobuild`: The database will be created by attempting to automatically
+build the source root. Available for C/C++, C#, Go, Java/Kotlin, and
+Swift.
+
+`manual`: The database will be created by building the source root using
+a manually specified build command. Available for C/C++, C#, Go,
+Java/Kotlin, and Swift.
+
+When creating a database with `--command`, there is no need to
+additionally specify '--build-mode manual'.
+
+Available since `v2.16.4`.
 
 #### `-s, --source-root=<dir>`
 
@@ -244,7 +276,7 @@ If `--max-disk-cache` is not given, the evaluator will try hard to
 curtail disk cache usage if the free space on the file system drops
 below this percentage.
 
-#### `-m, --mode=<mode>`
+#### `--cache-cleanup=<mode>`
 
 Select how aggressively to trim the cache. Choices include:
 
@@ -256,6 +288,9 @@ predicates.
 
 `fit`: Simply make sure the defined size limits for the disk cache are
 observed, deleting as many intermediates as necessary.
+
+`overlay`: Trim to just the data that will be useful when evaluating
+against an overlay.
 
 #### `--cleanup-upgrade-backups`
 
@@ -271,7 +306,7 @@ produce all necessary data directly.
 #### `--extra-tracing-config=<tracing-config.lua>`
 
 \[Advanced] The path to a tracer configuration file. It may be used to
-modify the behaviour of the build tracer. It may be used to pick out
+modify the behavior of the build tracer. It may be used to pick out
 compiler processes that run as part of the build command, and trigger
 the execution of other tools. The extractors will provide default tracer
 configuration files that should work in most situations.
@@ -282,7 +317,7 @@ configuration files that should work in most situations.
 
 \[Advanced] The directory in which the specified command should be
 executed. If this argument is not provided, the command is executed in
-the value of `--source-root` passed to [codeql database create](/code-security/codeql-cli/codeql-cli-manual/database-create), if one exists. If no `--source-root` argument is provided, the command is executed in the
+the value of `--source-root` passed to codeql database create, if one exists. If no `--source-root` argument is provided, the command is executed in the
 current working directory.
 
 #### `--no-run-unnecessary-builds`
@@ -307,7 +342,7 @@ be any string that does not contain a newline.
 
 You can use this command-line option repeatedly to set multiple
 extractor options. If you provide multiple values for the same extractor
-option, the behaviour depends on the type that the extractor option
+option, the behavior depends on the type that the extractor option
 expects. String options will use the last value provided. Array options
 will use all the values provided, in order. Extractor options specified
 using this command-line option are processed after extractor options
@@ -333,7 +368,7 @@ string and array options are map entries with string and array values.
 
 Extractor option bundle files are read in the order they are specified.
 If different extractor option bundle files specify the same extractor
-option, the behaviour depends on the type that the extractor option
+option, the behavior depends on the type that the extractor option
 expects. String options will use the last value provided. Array options
 will use all the values provided, in order. Extractor options specified
 using this command-line option are processed before extractor options

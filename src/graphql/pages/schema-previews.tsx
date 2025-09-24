@@ -1,20 +1,19 @@
 import { GetServerSideProps } from 'next'
-import React from 'react'
 
 import {
   MainContextT,
   MainContext,
   getMainContext,
   addUINamespaces,
-} from 'src/frame/components/context/MainContext'
-import { AutomatedPage } from 'src/automated-pipelines/components/AutomatedPage'
+} from '@/frame/components/context/MainContext'
+import { AutomatedPage } from '@/automated-pipelines/components/AutomatedPage'
 import {
   AutomatedPageContext,
   AutomatedPageContextT,
   getAutomatedPageContextFromRequest,
-} from 'src/automated-pipelines/components/AutomatedPageContext'
-import { Previews } from 'src/graphql/components/Previews'
-import { PreviewT } from 'src/graphql/components/types'
+} from '@/automated-pipelines/components/AutomatedPageContext'
+import { Previews } from '@/graphql/components/Previews'
+import { PreviewT } from '@/graphql/components/types'
 
 type Props = {
   mainContext: MainContextT
@@ -34,8 +33,8 @@ export default function GraphqlPreviews({ mainContext, schema, automatedPageCont
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (context) => {
-  const { getPreviews } = await import('src/graphql/lib/index.js')
-  const { getAutomatedPageMiniTocItems } = await import('src/frame/lib/get-mini-toc-items.js')
+  const { getPreviews } = await import('@/graphql/lib/index.js')
+  const { getAutomatedPageMiniTocItems } = await import('@/frame/lib/get-mini-toc-items.js')
 
   const req = context.req as any
   const res = context.res as any

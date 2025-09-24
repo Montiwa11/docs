@@ -1,10 +1,11 @@
 import fs from 'fs'
 import path from 'path'
-import { describe, expect, test } from '@jest/globals'
 
-import { allVersions } from '#src/versions/lib/all-versions.js'
-import getApplicableVersions from '#src/versions/lib/get-applicable-versions.js'
-import { latest } from '#src/versions/lib/enterprise-server-releases.js'
+import { describe, expect, test } from 'vitest'
+
+import { allVersions } from '@/versions/lib/all-versions'
+import getApplicableVersions from '@/versions/lib/get-applicable-versions'
+import { latest } from '@/versions/lib/enterprise-server-releases'
 
 describe('Versions frontmatter', () => {
   test('wildcard', async () => {

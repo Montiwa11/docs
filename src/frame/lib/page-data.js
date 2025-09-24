@@ -1,14 +1,14 @@
 import path from 'path'
 
-import languages from '#src/languages/lib/languages.js'
-import { allVersions } from '#src/versions/lib/all-versions.js'
-import createTree from './create-tree.js'
-import nonEnterpriseDefaultVersion from '#src/versions/lib/non-enterprise-default-version.js'
-import readFileContents from './read-file-contents.js'
-import Page from './page.js'
-import Permalink from './permalink.js'
-import frontmatterSchema from './frontmatter.js'
-import { correctTranslatedContentStrings } from '#src/languages/lib/correct-translation-content.js'
+import languages from '@/languages/lib/languages'
+import { allVersions } from '@/versions/lib/all-versions'
+import createTree from './create-tree'
+import nonEnterpriseDefaultVersion from '@/versions/lib/non-enterprise-default-version'
+import readFileContents from './read-file-contents'
+import Page from './page'
+import Permalink from './permalink'
+import frontmatterSchema from './frontmatter'
+import { correctTranslatedContentStrings } from '@/languages/lib/correct-translation-content'
 
 // If you run `export DEBUG_TRANSLATION_FALLBACKS=true` in your terminal,
 // every time a translation file fails to initialize we fall back to English
@@ -63,6 +63,7 @@ export async function loadUnversionedTree(languagesOnly = []) {
           langObj,
           unversionedTree.en,
         )
+        setCategoryApplicableVersions(unversionedTree[langObj.code])
       }),
   )
 
@@ -203,6 +204,27 @@ async function translateTree(dir, langObj, enTree) {
     code: langObj.code,
   })
 
+  translatedData.title = correctTranslatedContentStrings(translatedData.title, enPage.title, {
+    relativePath,
+    code: langObj.code,
+  })
+  if (translatedData.shortTitle) {
+    translatedData.shortTitle = correctTranslatedContentStrings(
+      translatedData.shortTitle,
+      enPage.shortTitle,
+      {
+        relativePath,
+        code: langObj.code,
+      },
+    )
+  }
+  if (translatedData.intro) {
+    translatedData.intro = correctTranslatedContentStrings(translatedData.intro, enPage.intro, {
+      relativePath,
+      code: langObj.code,
+    })
+  }
+
   item.page = new Page(
     Object.assign(
       {},
@@ -245,13 +267,17 @@ async function translateTree(dir, langObj, enTree) {
  *
  * Order of languages and versions doesn't matter, but order of child page arrays DOES matter (for navigation).
 */
-export async function loadSiteTree(unversionedTree) {
-  const rawTree = Object.assign({}, unversionedTree || (await loadUnversionedTree()))
+export async function loadSiteTree(unversionedTree, languagesOnly = []) {
+  const rawTree = Object.assign({}, unversionedTree || (await loadUnversionedTree(languagesOnly)))
   const siteTree = {}
 
+  const langCodes = (languagesOnly.length && languagesOnly) || Object.keys(languages)
   // For every language...
   await Promise.all(
-    Object.keys(languages).map(async (langCode) => {
+    langCodes.map(async (langCode) => {
+      if (!(langCode in rawTree)) {
+        throw new Error(`No tree for language ${langCode}`)
+      }
       const treePerVersion = {}
       // in every version...
       await Promise.all(
@@ -308,8 +334,12 @@ export async function loadPageList(unversionedTree, languagesOnly = []) {
   const rawTree = unversionedTree || (await loadUnversionedTree(languagesOnly))
   const pageList = []
 
+  const langCodes = (languagesOnly.length && languagesOnly) || Object.keys(languages)
   await Promise.all(
-    ((languagesOnly.length && languagesOnly) || Object.keys(languages)).map(async (langCode) => {
+    langCodes.map(async (langCode) => {
+      if (!(langCode in rawTree)) {
+        throw new Error(`No tree for language ${langCode}`)
+      }
       await addToCollection(rawTree[langCode], pageList)
     }),
   )

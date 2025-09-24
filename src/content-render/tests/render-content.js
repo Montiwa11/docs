@@ -1,5 +1,7 @@
 import cheerio from 'cheerio'
-import { renderContent } from '#src/content-render/index.js'
+import { describe, expect, test } from 'vitest'
+
+import { renderContent } from '@/content-render/index'
 import { EOL } from 'os'
 
 // Use platform-specific line endings for realistic tests when templates have
@@ -50,45 +52,6 @@ describe('renderContent', () => {
     const context = { color: 'orange' }
     const output = await renderContent(template, context, { textOnly: true })
     expect(output, 'my favorite color is orange.')
-  })
-
-  test('throws on rendering errors', async () => {
-    const template = 1
-    const context = {}
-
-    let err
-
-    try {
-      await renderContent(template, context)
-    } catch (_err) {
-      err = _err
-    }
-
-    expect(err).toBeTruthy()
-  })
-
-  test('warns and throws on rendering errors when the file name is passed', async () => {
-    const template = 1
-    const context = {}
-
-    let err
-    let warned = false
-
-    const error = console.error
-    console.error = (message) => {
-      expect(message, 'renderContent failed on file: name')
-      console.error = error
-      warned = true
-    }
-
-    try {
-      await renderContent(template, context, { filename: 'name' })
-    } catch (_err) {
-      err = _err
-    }
-
-    expect(err).toBeTruthy()
-    expect(warned).toBeTruthy()
   })
 
   test('renders empty templates', async () => {
@@ -279,5 +242,19 @@ var a = 1
     const el = $('button.js-btn-copy')
     expect(el.data('clipboard')).toBe(2967273189)
     // Generates a murmurhash based ID that matches a <pre>
+  })
+
+  test('renders alerts with data-container attribute for analytics', async () => {
+    const template = nl(`
+> [!NOTE]
+> This is a note with a [link](https://example.com)
+    `)
+    const html = await renderContent(template, { alertTitles: { NOTE: 'Note' } })
+    const $ = cheerio.load(html)
+    const alertEl = $('.ghd-alert')
+    expect(alertEl.length).toBe(1)
+    expect(alertEl.attr('data-container')).toBe('alert')
+    expect(alertEl.hasClass('ghd-alert-accent')).toBe(true)
+    expect(alertEl.find('a[href="https://example.com"]').length).toBe(1)
   })
 })

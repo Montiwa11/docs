@@ -1,5 +1,7 @@
-import { runRule } from '../../lib/init-test.js'
-import { imageAltTextExcludeStartWords } from '../../lib/linting-rules/image-alt-text-exclude-start-words.js'
+import { describe, expect, test } from 'vitest'
+
+import { runRule } from '../../lib/init-test'
+import { imageAltTextExcludeStartWords } from '../../lib/linting-rules/image-alt-text-exclude-start-words'
 
 describe(imageAltTextExcludeStartWords.names.join(' - '), () => {
   test('image alt text that starts with exclude words fails', async () => {

@@ -1,17 +1,17 @@
 import fs from 'fs'
 import path from 'path'
 
-import { describe } from '@jest/globals'
+import { beforeAll, describe, expect, test } from 'vitest'
 import walk from 'walk-sync'
 import { isPlainObject, difference } from 'lodash-es'
 
-import { isApiVersioned, allVersions } from '#src/versions/lib/all-versions.js'
-import getRest from '../lib/index.js'
-import readFrontmatter from '#src/frame/lib/read-frontmatter.js'
-import frontmatter from '#src/frame/lib/frontmatter.js'
-import getApplicableVersions from '../../versions/lib/get-applicable-versions.js'
-import { getAutomatedMarkdownFiles } from '../scripts/test-open-api-schema.js'
-import { nonAutomatedRestPaths } from '../lib/config.js'
+import { isApiVersioned, allVersions } from '@/versions/lib/all-versions'
+import getRest from '../lib/index'
+import readFrontmatter from '@/frame/lib/read-frontmatter'
+import frontmatter from '@/frame/lib/frontmatter'
+import getApplicableVersions from '../../versions/lib/get-applicable-versions'
+import { getAutomatedMarkdownFiles } from '../scripts/test-open-api-schema'
+import { nonAutomatedRestPaths } from '../lib/config'
 
 const schemasPath = 'src/rest/data'
 
@@ -121,7 +121,10 @@ describe('markdown for each rest version', () => {
           Object.keys(openApiSchema[version][category]),
           `The REST version: ${version}'s category: ${category} does not include the subcategory: ${subCategory}. Please check file: ${file}`,
         ).toContain(subCategory)
-        expect(categoryApplicableVersions[category]).toContain(version)
+        expect(
+          categoryApplicableVersions[category],
+          `The versions that apply to category ${category} does not contain the ${version}, as is expected. Please check the versions for file ${file} or look at the index that governs that file (in its parent directory).`,
+        ).toContain(version)
       }
     })
   })

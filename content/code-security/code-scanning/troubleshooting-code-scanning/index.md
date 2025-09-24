@@ -10,7 +10,7 @@ versions:
   ghes: '*'
   ghec: '*'
 topics:
-  - Advanced Security
+  - Code Security
   - Code scanning
   - CodeQL
   - Repositories
@@ -19,8 +19,8 @@ children:
   - /alerts-in-generated-code
   - /analysis-takes-too-long
   - /automatic-build-failed
+  - /c-sharp-compiler-unexpectedly-failing
   - /cannot-enable-codeql-in-a-private-repository
-  - /default-setup-fails-with-a-language
   - /enabling-default-setup-takes-too-long
   - /extraction-errors-in-the-database
   - /fewer-lines-scanned-than-expected
@@ -35,4 +35,5 @@ children:
   - /two-codeql-workflows
   - /unclear-what-triggered-a-workflow
   - /unnecessary-step-found
+  - /kotlin-detected-in-no-build
 ---

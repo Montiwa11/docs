@@ -10,7 +10,7 @@ versions:
   ghec: '*'
   ghes: '*'
 topics:
-  - Advanced Security
+  - Code Security
   - Code scanning
   - CodeQL
 type: reference
@@ -55,7 +55,9 @@ children:
   - /execute-upgrades
   - /generate-extensible-predicate-metadata
   - /generate-log-summary
+  - /generate-overlay-changes
   - /generate-query-help
+  - /github-merge-results
   - /github-upload-results
   - /pack-add
   - /pack-bundle
@@ -82,6 +84,7 @@ children:
   - /resolve-library-path
   - /resolve-metadata
   - /resolve-ml-models
+  - /resolve-packs
   - /resolve-qlpacks
   - /resolve-qlref
   - /resolve-queries

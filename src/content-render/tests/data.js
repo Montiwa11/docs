@@ -1,9 +1,9 @@
-import { afterAll, beforeAll, expect, describe, it } from '@jest/globals'
+import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 
-import Page from '#src/frame/lib/page.js'
-import languages from '#src/languages/lib/languages.js'
-import nonEnterpriseDefaultVersion from '#src/versions/lib/non-enterprise-default-version.js'
-import { DataDirectory } from '#src/tests/helpers/data-directory.js'
+import Page from '@/frame/lib/page'
+import languages from '@/languages/lib/languages'
+import nonEnterpriseDefaultVersion from '@/versions/lib/non-enterprise-default-version'
+import { DataDirectory } from '@/tests/helpers/data-directory'
 
 describe('data tag', () => {
   let dd
@@ -17,6 +17,9 @@ describe('data tag', () => {
             foo: 'Foo',
           },
         },
+        ui: {
+          alerts: {},
+        },
       },
     })
     languages.en.dir = dd.root
@@ -27,7 +30,7 @@ describe('data tag', () => {
     languages.en.dir = enDirBefore
   })
 
-  it('should render fine if data is found', async () => {
+  test('should render fine if data is found', async () => {
     const page = await Page.init({
       relativePath: 'liquid-tags/good-data-variable.md',
       basePath: './src/fixtures/fixtures',
@@ -44,7 +47,7 @@ describe('data tag', () => {
     // which we control the value of here in the test.
     expect(rendered.includes('Foo')).toBeTruthy()
   })
-  it('should throw if the data tag is used with something unrecognized', async () => {
+  test('should throw if the data tag is used with something unrecognized', async () => {
     const page = await Page.init({
       relativePath: 'liquid-tags/bad-data-variable.md',
       basePath: './src/fixtures/fixtures',

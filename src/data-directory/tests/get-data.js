@@ -1,20 +1,20 @@
 import fs from 'fs'
 import path from 'path'
 
-import { expect, test, describe, beforeAll, afterAll } from '@jest/globals'
+import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 
-import languages from '#src/languages/lib/languages.js'
+import languages from '@/languages/lib/languages'
 import {
   getDataByLanguage,
   getDeepDataByLanguage,
   getUIDataMerged,
-} from '#src/data-directory/lib/get-data.js'
-import { DataDirectory } from '#src/tests/helpers/data-directory.js'
+} from '@/data-directory/lib/get-data'
+import { DataDirectory } from '@/tests/helpers/data-directory'
 
 describe('get-data', () => {
   let dd
   const enDirBefore = languages.en.dir
-  // Only `en` is available in jest tests, so pretend we also have Japanese
+  // Only `en` is available in tests, so pretend we also have Japanese
   languages.ja = Object.assign({}, languages.en, {})
 
   beforeAll(() => {
@@ -44,7 +44,7 @@ describe('get-data', () => {
     const jaTranslationsRoot = path.join(dd.root, 'translations', 'ja-JP')
     fs.mkdirSync(jaTranslationsRoot, { recursive: true })
     languages.ja.dir = jaTranslationsRoot
-    new DataDirectory( // eslint-disable-line no-new
+    new DataDirectory(
       {
         data: {
           ui: {
@@ -221,7 +221,7 @@ front: >'matter
 describe('get-data on corrupt translations', () => {
   let dd
   const enDirBefore = languages.en.dir
-  // Only `en` is available in jest tests, so pretend we also have Japanese
+  // Only `en` is available in vitest tests, so pretend we also have Japanese
   languages.ja = Object.assign({}, languages.en, {})
 
   beforeAll(() => {
@@ -242,7 +242,7 @@ describe('get-data on corrupt translations', () => {
     const jaTranslationsRoot = path.join(dd.root, 'translations', 'ja-JP')
     fs.mkdirSync(jaTranslationsRoot, { recursive: true })
     languages.ja.dir = jaTranslationsRoot
-    new DataDirectory( // eslint-disable-line no-new
+    new DataDirectory(
       {
         data: {
           variables: {

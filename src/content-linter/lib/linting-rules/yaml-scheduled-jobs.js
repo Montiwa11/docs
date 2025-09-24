@@ -1,8 +1,8 @@
 import yaml from 'js-yaml'
-
-import { liquid } from '#src/content-render/index.js'
-import { allVersions } from '#src/versions/lib/all-versions.js'
 import { addError, filterTokens } from 'markdownlint-rule-helpers'
+
+import { liquid } from '@/content-render/index'
+import { allVersions } from '@/versions/lib/all-versions'
 
 const scheduledYamlJobs = []
 
@@ -11,6 +11,7 @@ export const yamlScheduledJobs = {
   description:
     'YAML snippets that include scheduled workflows must not run on the hour and must be unique',
   tags: ['feature', 'actions'],
+  parser: 'markdownit',
   asynchronous: true,
   function: (params, onError) => {
     filterTokens(params, 'fence', async (token) => {

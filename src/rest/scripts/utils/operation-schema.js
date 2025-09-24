@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // This schema is used to validate each generated operation object at build time
 
 export default {
@@ -55,10 +54,6 @@ export default {
     previews: {
       description: 'The information about the preview headers',
       type: 'array',
-    },
-    enabledForGitHubApps: {
-      description: 'Whether the operation is enabled for server-to-server GitHub Apps',
-      type: 'boolean',
     },
     bodyParameters: {
       description: 'The request body parameters for the operation',

@@ -1,5 +1,7 @@
-import patterns from '#src/frame/lib/patterns.js'
-import EnterpriseServerReleases from '#src/versions/lib/enterprise-server-releases.js'
+import { describe, expect, test } from 'vitest'
+
+import patterns from '@/frame/lib/patterns'
+import EnterpriseServerReleases from '@/versions/lib/enterprise-server-releases'
 const { supported, deprecated, all, latest, oldestSupported, nextDeprecationDate } =
   EnterpriseServerReleases
 

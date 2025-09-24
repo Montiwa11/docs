@@ -5,7 +5,7 @@ versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   ghec: '*'
   ghes: '*'
 topics:
-  - Advanced Security
+  - Code Security
   - Code scanning
   - CodeQL
 type: reference
@@ -16,6 +16,9 @@ redirect_from:
   - /code-security/codeql-cli/manual/dataset-cleanup
 ---
 
+<!-- markdownlint-disable GHD053 -->
+
+<!-- markdownlint-disable GHD030 -->
 
 <!-- Content after this section is automatically generated -->
 
@@ -24,7 +27,7 @@ redirect_from:
 ## Synopsis
 
 ```shell copy
-codeql dataset cleanup [--mode=<mode>] <options>... -- <dataset>
+codeql dataset cleanup <options>... -- <dataset>
 ```
 
 ## Description
@@ -69,7 +72,7 @@ If `--max-disk-cache` is not given, the evaluator will try hard to
 curtail disk cache usage if the free space on the file system drops
 below this percentage.
 
-#### `-m, --mode=<mode>`
+#### `--cache-cleanup=<mode>`
 
 Select how aggressively to trim the cache. Choices include:
 
@@ -81,6 +84,9 @@ predicates.
 
 `fit`: Simply make sure the defined size limits for the disk cache are
 observed, deleting as many intermediates as necessary.
+
+`overlay`: Trim to just the data that will be useful when evaluating
+against an overlay.
 
 #### `--cleanup-upgrade-backups`
 

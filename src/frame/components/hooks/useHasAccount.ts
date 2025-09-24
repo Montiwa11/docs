@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import Cookies from 'src/frame/components/lib/cookies'
+import Cookies from '@/frame/components/lib/cookies'
 
 // Measure if the user has a github.com account and signed in during this session.
 // The github.com sends the color_mode cookie every request when you sign in,
@@ -14,10 +14,14 @@ export function useHasAccount() {
   const [hasAccount, setHasAccount] = useState<boolean | null>(null)
 
   useEffect(() => {
-    const cookieValue = Cookies.get('color_mode')
-    const altCookieValue = Cookies.get('preferred_color_mode')
-    setHasAccount(Boolean(cookieValue || altCookieValue))
+    setHasAccount(isLoggedIn())
   }, [])
 
   return { hasAccount }
+}
+
+export function isLoggedIn() {
+  const cookieValue = Cookies.get('color_mode')
+  const altCookieValue = Cookies.get('preferred_color_mode')
+  return Boolean(cookieValue || altCookieValue)
 }

@@ -3,27 +3,26 @@ import dynamic from 'next/dynamic'
 import cx from 'classnames'
 import { LinkExternalIcon } from '@primer/octicons-react'
 
-import { DefaultLayout } from 'src/frame/components/DefaultLayout'
-import { ArticleTitle } from 'src/frame/components/article/ArticleTitle'
-import { useArticleContext } from 'src/frame/components/context/ArticleContext'
-import { LearningTrackNav } from 'src/learning-track/components/article/LearningTrackNav'
-import { MarkdownContent } from 'src/frame/components/ui/MarkdownContent'
-import { Lead } from 'src/frame/components/ui/Lead'
-import { PermissionsStatement } from 'src/frame/components/ui/PermissionsStatement'
+import { DefaultLayout } from '@/frame/components/DefaultLayout'
+import { ArticleTitle } from '@/frame/components/article/ArticleTitle'
+import { useArticleContext } from '@/frame/components/context/ArticleContext'
+import { LearningTrackNav } from '@/learning-track/components/article/LearningTrackNav'
+import { MarkdownContent } from '@/frame/components/ui/MarkdownContent'
+import { Lead } from '@/frame/components/ui/Lead'
+import { PermissionsStatement } from '@/frame/components/ui/PermissionsStatement'
 import { ArticleGridLayout } from './ArticleGridLayout'
 import { ArticleInlineLayout } from './ArticleInlineLayout'
-import { MeasureBrokenHashes } from './MeasureBrokenHashes'
-import { PlatformPicker } from 'src/tools/components/PlatformPicker'
-import { ToolPicker } from 'src/tools/components/ToolPicker'
-import { MiniTocs } from 'src/frame/components/ui/MiniTocs'
-import { LearningTrackCard } from 'src/learning-track/components/article/LearningTrackCard'
-import { RestRedirect } from 'src/rest/components/RestRedirect'
-import { Breadcrumbs } from 'src/frame/components/page-header/Breadcrumbs'
-import { Link } from 'src/frame/components/Link'
-import { useTranslation } from 'src/languages/components/useTranslation'
-import { LinkPreviewPopover } from 'src/links/components/LinkPreviewPopover'
+import { PlatformPicker } from '@/tools/components/PlatformPicker'
+import { ToolPicker } from '@/tools/components/ToolPicker'
+import { MiniTocs } from '@/frame/components/ui/MiniTocs'
+import { LearningTrackCard } from '@/learning-track/components/article/LearningTrackCard'
+import { RestRedirect } from '@/rest/components/RestRedirect'
+import { Breadcrumbs } from '@/frame/components/page-header/Breadcrumbs'
+import { Link } from '@/frame/components/Link'
+import { useTranslation } from '@/languages/components/useTranslation'
+import { LinkPreviewPopover } from '@/links/components/LinkPreviewPopover'
 
-const ClientSideRefresh = dynamic(() => import('src/frame/components/ClientSideRefresh'), {
+const ClientSideRefresh = dynamic(() => import('@/frame/components/ClientSideRefresh'), {
   ssr: false,
 })
 const isDev = process.env.NODE_ENV === 'development'
@@ -103,19 +102,25 @@ export const ArticlePage = () => {
     <DefaultLayout>
       <LinkPreviewPopover />
       {isDev && <ClientSideRefresh />}
-      <MeasureBrokenHashes />
       {router.pathname.includes('/rest/') && <RestRedirect />}
       {currentLayout === 'inline' ? (
-        <ArticleInlineLayout
-          supportPortalVaIframeProps={supportPortalVaIframeProps}
-          topper={<ArticleTitle>{title}</ArticleTitle>}
-          intro={introProp}
-          introCallOuts={introCalloutsProp}
-          toc={toc}
-          breadcrumbs={<Breadcrumbs />}
-        >
-          {articleContents}
-        </ArticleInlineLayout>
+        <>
+          <ArticleInlineLayout
+            supportPortalVaIframeProps={supportPortalVaIframeProps}
+            topper={<ArticleTitle>{title}</ArticleTitle>}
+            intro={introProp}
+            introCallOuts={introCalloutsProp}
+            toc={toc}
+            breadcrumbs={<Breadcrumbs />}
+          >
+            {articleContents}
+          </ArticleInlineLayout>
+          {isLearningPath ? (
+            <div className="container-lg mt-4 px-3">
+              <LearningTrackNav track={currentLearningTrack} />
+            </div>
+          ) : null}
+        </>
       ) : (
         <div className="container-xl px-3 px-md-6 my-4">
           <div className={cx('d-none d-xxl-block mt-3 mr-auto width-full')}>

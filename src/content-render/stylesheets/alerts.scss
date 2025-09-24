@@ -3,14 +3,15 @@
 // and we had to directly state a few props instead of using variables
 // that are only in the monolith.
 
-$colors: "default", "muted", "subtle", "accent", "success", "attention",
-  "severe", "danger", "open", "closed", "done", "sponsors";
+$colors:
+  "default", "muted", "subtle", "accent", "success", "attention", "severe",
+  "danger", "open", "closed", "done", "sponsors";
 
 .ghd-alert {
   padding: var(--base-size-8, 0.5rem) var(--base-size-16, 1rem);
   border-left: 0.25em solid
     var(--borderColor-default, var(--color-border-default));
-  margin-bottom: 1rem;
+  margin: 1rem 0;
 
   p:last-child,
   ul:last-child,
